@@ -8,15 +8,22 @@
 </head>
 <body>
 
-<h2>LOGIN</h2>
+<div id="login">
+  <h2>LOGIN</h2>
 
-<input id="email" placeholder="email">
-<input id="password" type="password" placeholder="heslo">
+  <input id="email" placeholder="email">
+  <input id="password" type="password" placeholder="heslo">
 
-<br><br>
+  <br><br>
 
-<button id="btnLogin">PRIHLÁSIŤ SA</button>
+  <button id="btnLogin">PRIHLÁSIŤ SA</button>
+</div>
 
+<div id="afterLogin" style="display:none;">
+  ✅ prihlásený ako <b><span id="loggedEmail"></span></b>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
   const SUPABASE_URL = "https://scwcrynxlamuapxaykzq.supabase.co";
   const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
@@ -24,14 +31,19 @@
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   document.getElementById("btnLogin").addEventListener("click", async () => {
-    alert("CLICK"); // 👈 MUSÍ sa zobraziť
-
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
     const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) alert(error.message);
+  });
 
-    alert(error ? error.message : "LOGIN OK");
+  sb.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("afterLogin").style.display = "block";
+      document.getElementById("loggedEmail").textContent = session.user.email;
+    }
   });
 </script>
 
