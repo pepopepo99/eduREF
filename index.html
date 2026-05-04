@@ -4,26 +4,37 @@
   <meta charset="UTF-8">
   <title>Test login</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
-<h2>LOGIN TEST</h2>
+<div id="login">
+  <h2>LOGIN TEST</h2>
 
-<input id="email" placeholder="email">
-<input id="password" type="password" placeholder="heslo">
+  <input id="email" placeholder="email">
+  <input id="password" type="password" placeholder="heslo">
 
-<br><br>
+  <br><br>
 
-<button id="btnRegister">REGISTRÁCIA</button>
-<button id="btnLogin">PRIHLÁSIŤ SA</button>
+  <button id="btnRegister">REGISTRÁCIA</button>
+  <button id="btnLogin">PRIHLÁSIŤ SA</button>
+</div>
 
+<div id="afterLogin" style="display:none;">
+  ✅ prihlásený ako <span id="loggedEmail"></span>
+</div>
 
-<script>
-  const SUPABASE_URL = "https://scwcrynxlamuapxaykzq.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
-
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<iframe
+  id="tallyVote"
+  data-tally-src="https://tally.so/embed/rj2Ly2?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+  width="100%"
+  height="600"
+  frameborder="0"
+  marginheight="0"
+  marginwidth="0"
+  title="Video hlasovanie"
+  style="display:nonet(SUPABASE_URL, SUPABASE_KEY);
 
   // Registrácia
   document.getElementById("btnRegister").addEventListener("click", async () => {
@@ -41,7 +52,7 @@
     if (error) alert(error.message);
   });
 
-  // ✅ TOTO TAM TERAZ CHÝBA – UI PREPÍNANIE
+  // ✅ UI prepnutie po prihlásení
   sb.auth.onAuthStateChange((_event, session) => {
     if (session) {
       document.getElementById("login").style.display = "none";
@@ -56,8 +67,8 @@
     }
   });
 </script>
-``
 
-
+<script src="https://tally.so/widgets/embed.js"></script>
 </body>
 </html>
+``
