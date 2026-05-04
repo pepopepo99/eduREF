@@ -2,64 +2,70 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
+  <title>Prihlásenie</title>
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
-<div id="login">
-  <h2>Prihlásenie</h2>
+<h2>Prihlásenie</h2>
 
-  <input id="email" placeholder="email">
-  <input id="password" type="password" placeholder="heslo">
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Heslo">
+<br><br>
 
-  <br><br>
-
-  <button id="btnLogin">Prihlásiť sa</button>
-</div>
-
-<div id="app" style="display:none;">
-  ✅ prihlásený ako <b><span id="userEmail"></span></b>
-  <br><br>
-  <button id="btnLogout">Odhlásiť sa</button>
-</div>
+<button id="btnLogin">Prihlásiť sa</button>
+<p id="msg"></p>
 
 <script>
   const SUPABASE_URL = "https://scwcrynxlamuapxaykzq.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
-
+  const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5"; // 👈 doplň svoj publishable key
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const loginDiv = document.getElementById("login");
-  const appDiv = document.getElementById("app");
-  const userEmailSpan = document.getElementById("userEmail");
+  const msg = (t) => document.getElementById("msg").innerText = t;
 
   document.getElementById("btnLogin").onclick = async () => {
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) alert(error.message);
-  };
-
-  document.getElementById("btnLogout").onclick = async () => {
-    await sb.auth.signOut();
-    location.reload();
-  };
-
-  sb.auth.onAuthStateChange((_event, session) => {
-    if (session) {
-      loginDiv.style.display = "none";
-      appDiv.style.display = "block";
-      userEmailSpan.textContent = session.user.email;
-    } else {
-      loginDiv.style.display = "block";
-      appDiv.style.display = "none";
+    if (!email || !password) {
+      msg("Zadaj email aj heslo");
+      return;
     }
-  });
+
+    // 1️⃣ allow‑list kontrola
+    const { data } = await sb
+      .from("allowed_emails")
+      .select("email")
+      .eq("email", email)
+      .single();
+
+    if (!data) {
+      msg("Tento email nemá prístup");
+      return;
+    }
+
+    // 2️⃣ pokus o prihlásenie
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      // 3️⃣ ak účet ešte neexistuje → registrácia (pošle potvrdzovací email)
+      if (error.message.toLowerCase().includes("invalid")) {
+        const { error: signupError } = await sb.auth.signUp({ email, password });
+        if (signupError) msg(signupError.message);
+        else msg("Skontroluj email a potvrď registráciu.");
+        return;
+      }
+
+      msg(error.message);
+      return;
+    }
+
+    msg("Prihlásený ✅");
+  };
 </script>
 
 </body>
 </html>
+``
