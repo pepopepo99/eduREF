@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <title>Login</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-</head>
-<body>
+  <!-- Supabase (LEN RAZ, TU) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.minbody>
 
 <div id="login">
   <h2>LOGIN</h2>
@@ -23,8 +22,8 @@
   ✅ prihlásený ako <b><span id="loggedEmail"></span></b>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+document.addEventListener("DOMContentLoaded", () => {
   const SUPABASE_URL = "https://scwcrynxlamuapxaykzq.supabase.co";
   const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
 
@@ -45,6 +44,7 @@
       document.getElementById("loggedEmail").textContent = session.user.email;
     }
   });
+});
 </script>
 
 </body>
