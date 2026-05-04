@@ -18,31 +18,46 @@
 <button id="btnRegister">REGISTRÁCIA</button>
 <button id="btnLogin">PRIHLÁSIŤ SA</button>
 
-<script>
-  console.log("JS start");
 
+<script>
   const SUPABASE_URL = "https://scwcrynxlamuapxaykzq.supabase.co";
   const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  // Registrácia
   document.getElementById("btnRegister").addEventListener("click", async () => {
-    console.log("REGISTER CLICK");
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-
     const { error } = await sb.auth.signUp({ email, password });
-    alert(error ? error.message : "REG OK");
+    if (error) alert(error.message);
   });
 
+  // Prihlásenie
   document.getElementById("btnLogin").addEventListener("click", async () => {
-    console.log("LOGIN CLICK");
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-
     const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) alert(error.message);
+  });
+
+  // ✅ TOTO TAM TERAZ CHÝBA – UI PREPÍNANIE
+  sb.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("afterLogin").style.display = "block";
+      document.getElementById("loggedEmail").textContent = session.user.email;
+
+      document.getElementById("tallyVote").style.display = "block";
+
+      if (window.Tally) {
+        Tally.loadEmbeds();
+      }
+    }
   });
 </script>
+``
+
 
 </body>
 </html>
