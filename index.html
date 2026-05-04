@@ -2,73 +2,38 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8">
-  <title>Test login</title>
+  <title>Login</title>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
-<div id="login">
-  <h2>LOGIN TEST</h2>
+<h2>LOGIN</h2>
 
-  <input id="email" placeholder="email">
-  <input id="password" type="password" placeholder="heslo">
+<input id="email" placeholder="email">
+<input id="password" type="password" placeholder="heslo">
 
-  <br><br>
+<br><br>
 
-  <button id="btnRegister">REGISTRÁCIA</button>
-  <button id="btnLogin">PRIHLÁSIŤ SA</button>
-</div>
+<button id="btnLogin">PRIHLÁSIŤ SA</button>
 
-<div id="afterLogin" style="display:none;">
-  ✅ prihlásený ako <span id="loggedEmail"></span>
-</div>
+<script>
+  const SUPABASE_URL = "https://scwcrynxlamuapxaykzq.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
 
-<iframe
-  id="tallyVote"
-  data-tally-src="https://tally.so/embed/rj2Ly2?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
-  width="100%"
-  height="600"
-  frameborder="0"
-  marginheight="0"
-  marginwidth="0"
-  title="Video hlasovanie"
-  style="display:nonet(SUPABASE_URL, SUPABASE_KEY);
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Registrácia
-  document.getElementById("btnRegister").addEventListener("click", async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const { error } = await sb.auth.signUp({ email, password });
-    if (error) alert(error.message);
-  });
-
-  // Prihlásenie
   document.getElementById("btnLogin").addEventListener("click", async () => {
+    alert("CLICK"); // 👈 MUSÍ sa zobraziť
+
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+
     const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) alert(error.message);
-  });
 
-  // ✅ UI prepnutie po prihlásení
-  sb.auth.onAuthStateChange((_event, session) => {
-    if (session) {
-      document.getElementById("login").style.display = "none";
-      document.getElementById("afterLogin").style.display = "block";
-      document.getElementById("loggedEmail").textContent = session.user.email;
-
-      document.getElementById("tallyVote").style.display = "block";
-
-      if (window.Tally) {
-        Tally.loadEmbeds();
-      }
-    }
+    alert(error ? error.message : "LOGIN OK");
   });
 </script>
 
-<script src="https://tally.so/widgets/embed.js"></script>
 </body>
 </html>
-``
