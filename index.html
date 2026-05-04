@@ -5,7 +5,7 @@
   <title>Prihlásenie</title>
 
   <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/sdist/umd/supabase.min.js
 </head>
 <body>
 
@@ -20,9 +20,9 @@
 
 <script>
   const SUPABASE_URL = "https://scwcrynxlamuapxaykzq.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5"; // 👈 doplň svoj publishable key
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
 
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const msg = (t) => document.getElementById("msg").innerText = t;
 
   document.getElementById("btnLogin").onclick = async () => {
@@ -49,23 +49,32 @@
     // 2️⃣ pokus o prihlásenie
     const { error } = await sb.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      // 3️⃣ ak účet ešte neexistuje → registrácia (pošle potvrdzovací email)
-      if (error.message.toLowerCase().includes("invalid")) {
-        const { error: signupError } = await sb.auth.signUp({ email, password });
-        if (signupError) msg(signupError.message);
-        else msg("Skontroluj email a potvrď registráciu.");
-        return;
-      }
-
-      msg(error.message);
+    if (!error) {
+      msg("Prihlásený ✅");
       return;
     }
 
-    msg("Prihlásený ✅");
+    // 3️⃣ ak účet ešte neexistuje → registrácia + potvrdzovací email
+    if (error.message.toLowerCase().includes("invalid")) {
+      const { error: signupError } = await sb.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: window.location.origin
+        }
+      });
+
+      if (signupError) {
+        msg(signupError.message);
+      } else {
+        msg("Skontroluj email a potvrď registráciu.");
+      }
+      return;
+    }
+
+    msg(error.message);
   };
 </script>
 
 </body>
 </html>
-``
