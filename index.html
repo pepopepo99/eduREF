@@ -4,50 +4,61 @@
   <meta charset="UTF-8">
   <title>Login</title>
 
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
-
-
 <body>
 
 <div id="login">
-  <h2>LOGIN</h2>
+  <h2>Prihlásenie</h2>
 
   <input id="email" placeholder="email">
   <input id="password" type="password" placeholder="heslo">
 
   <br><br>
 
-  <button id="btnLogin">PRIHLÁSIŤ SA</button>
+  <button id="btnLogin">Prihlásiť sa</button>
 </div>
 
-<div id="afterLogin" style="display:none;">
-  ✅ prihlásený ako <b><span id="loggedEmail"></span></b>
+<div id="app" style="display:none;">
+  ✅ prihlásený ako <b><span id="userEmail"></span></b>
+  <br><br>
+  <button id="btnLogout">Odhlásiť sa</button>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
   const SUPABASE_URL = "https://scwcrynxlamuapxaykzq.supabase.co";
   const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  document.getElementById("btnLogin").addEventListener("click", async () => {
+  const loginDiv = document.getElementById("login");
+  const appDiv = document.getElementById("app");
+  const userEmailSpan = document.getElementById("userEmail");
+
+  document.getElementById("btnLogin").onclick = async () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) alert(error.message);
-  });
+  };
+
+  document.getElementById("btnLogout").onclick = async () => {
+    await sb.auth.signOut();
+    location.reload();
+  };
 
   sb.auth.onAuthStateChange((_event, session) => {
     if (session) {
-      document.getElementById("login").style.display = "none";
-      document.getElementById("afterLogin").style.display = "block";
-      document.getElementById("loggedEmail").textContent = session.user.email;
+      loginDiv.style.display = "none";
+      appDiv.style.display = "block";
+      userEmailSpan.textContent = session.user.email;
+    } else {
+      loginDiv.style.display = "block";
+      appDiv.style.display = "none";
     }
   });
-});
 </script>
 
 </body>
