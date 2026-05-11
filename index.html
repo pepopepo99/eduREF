@@ -4,15 +4,11 @@
   <meta charset="UTF-8">
   <title>Prihlásenie</title>
 
-  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
-  <!-- Tally -->
   <script src="https://tally.so/widgets/embed.js"></script>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login">
   <h2>Prihlásenie</h2>
 
@@ -24,7 +20,6 @@
   <p id="msg"></p>
 </div>
 
-<!-- APP (po prihlásení) -->
 <div id="app" style="display:none;">
   ✅ Prihlásený ako <b><span id="userEmail"></span></b>
   <br><br>
@@ -33,20 +28,20 @@
 
   <hr>
 
-  <!-- Tally embed -->
+  <!-- Tvoje Tally -->
   <iframe
-    data-tally-src="https://tally.so/embed/TVÔJ_TALLY_ID?hideTitle=1&transparentBackground=1&dynamicHeight=1"
+    data-tally-src="https://tally.so/embed/rj2Ly2?hideTitle=1&transparentBackground=1&dynamicHeight=1"
     width="100%"
     height="600"
     frameborder="0"
-    title="Hlasovaniew_7zVV9-O5";
+    title="base.co";
+  const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const loginDiv = document.getElementById("login");
   const appDiv = document.getElementById("app");
   const msg = (t) => document.getElementById("msg").innerText = t;
 
-  // LOGIN / REGISTER
   document.getElementById("btnLogin").onclick = async () => {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
@@ -56,7 +51,6 @@
       return;
     }
 
-    // allow-list kontrola
     const { data } = await sb
       .from("allowed_emails")
       .select("email")
@@ -68,12 +62,10 @@
       return;
     }
 
-    // pokus o login
     const { error } = await sb.auth.signInWithPassword({ email, password });
 
     if (!error) return;
 
-    // ak účet neexistuje → registrácia
     if (error.message.toLowerCase().includes("invalid")) {
       const { error: signupError } = await sb.auth.signUp({
         email,
@@ -91,13 +83,11 @@
     msg(error.message);
   };
 
-  // REAKCIA NA PRIHLÁSENIE / ODHĽÁSENIE
   sb.auth.onAuthStateChange((_event, session) => {
     if (session) {
       loginDiv.style.display = "none";
       appDiv.style.display = "block";
       document.getElementById("userEmail").textContent = session.user.email;
-
       if (window.Tally) Tally.loadEmbeds();
     } else {
       loginDiv.style.display = "block";
@@ -105,13 +95,13 @@
     }
   });
 
-  // LOGOUT
   document.getElementById("btnLogout").onclick = async () => {
     await sb.auth.signOut();
     location.reload();
   };
+
+});
 </script>
 
 </body>
 </html>
-``
