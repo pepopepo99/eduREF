@@ -7,7 +7,7 @@
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-  <!-- Tally embed loader -->
+  <!-- Tally loader -->
   <script src="https://tally.so/widgets/embed.js"></script>
 </head>
 <body>
@@ -33,13 +33,13 @@
 
   <hr>
 
-  <!-- Tally formulár -->
+  <!-- Tvoje Tally -->
   <iframe
     data-tally-src="https://tally.so/embed/rj2Ly2?hideTitle=1&transparentBackground=1&dynamicHeight=1"
     width="100%"
     height="600"
     frameborder="0"
-    title="Hlasovaniexaykzq.supabase.co";
+    title="Hlasovanieco";
   const SUPABASE_KEY = "sb_publishable_a1CGB9FNW40_G5twPH-jlw_7zVV9-O5";
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -47,7 +47,7 @@
   const appDiv = document.getElementById("app");
   const msg = (t) => document.getElementById("msg").innerText = t;
 
-  // 🔹 Login / register
+  // LOGIN / REGISTER
   document.getElementById("btnLogin").onclick = async () => {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
@@ -57,7 +57,7 @@
       return;
     }
 
-    // allow‑list kontrola
+    // allow-list kontrola
     const { data } = await sb
       .from("allowed_emails")
       .select("email")
@@ -92,23 +92,20 @@
     msg(error.message);
   };
 
-  // 🔹 React to auth state
+  // REAKCIA NA PRIHLÁSENIE / ODHĽÁSENIE
   sb.auth.onAuthStateChange((_event, session) => {
     if (session) {
       loginDiv.style.display = "none";
       appDiv.style.display = "block";
       document.getElementById("userEmail").textContent = session.user.email;
-
-      if (window.Tally) {
-        Tally.loadEmbeds();
-      }
+      if (window.Tally) Tally.loadEmbeds();
     } else {
       loginDiv.style.display = "block";
       appDiv.style.display = "none";
     }
   });
 
-  // 🔹 Logout
+  // LOGOUT
   document.getElementById("btnLogout").onclick = async () => {
     await sb.auth.signOut();
     location.reload();
